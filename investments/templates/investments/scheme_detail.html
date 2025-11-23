@@ -1,0 +1,46 @@
+{% extends "ui_gsm/base.html" %}
+
+{% block title %}{{ scheme.name }}{% endblock %}
+
+{% block content %}
+<section class="card" style="padding: 32px;">
+  <a href="{% url 'funds' %}" class="primary-nav__link" style="padding: 8px 14px; display: inline-block; margin-bottom: 16px;">← Back to Funds</a>
+  <header style="margin-bottom: 18px;">
+    <p class="eyebrow-text" style="letter-spacing: 2px; font-size: 12px; opacity: 0.7;">
+      {{ scheme.company_name }}
+    </p>
+    <h1 style="font-size: 30px; margin-bottom: 8px;">{{ scheme.name }}</h1>
+    <p style="color: rgba(255, 255, 255, 0.7); max-width: 620px;">
+      Cycle length: {{ scheme.cycle_days }} days • Daily return: {{ scheme.daily_return_percent }}%
+    </p>
+    <p style="color: rgba(255, 255, 255, 0.7); max-width: 620px;">
+      Invest between Rs {{ scheme.min_amount|floatformat:2 }} and Rs {{ scheme.max_amount|floatformat:2 }}. Each user can hold only one active investment per cycle for this scheme.
+    </p>
+    {% if scheme.terms_url %}
+      <a href="{{ scheme.terms_url }}" target="_blank" rel="noopener" style="color: #9dc6ff;">View Terms & Conditions</a>
+    {% endif %}
+  </header>
+
+  {% if has_active_investment %}
+    <div style="background: rgba(255,255,255,0.05); padding: 14px 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 18px;">
+      <strong>Heads up:</strong> You already have an active investment in this scheme's cycle.
+    </div>
+  {% endif %}
+
+  <form method="post" class="card" style="padding: 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);">
+    {% csrf_token %}
+    <div style="display: grid; gap: 12px; max-width: 360px;">
+      <label for="{{ form.amount.id_for_label }}" style="font-weight: 600;">Amount</label>
+      {{ form.amount }}
+      {% if form.amount.errors %}
+        <p style="color: #ff9da0; margin: 0;">{{ form.amount.errors|striptags }}</p>
+      {% endif %}
+    </div>
+    <div style="margin-top: 16px;">
+      <button type="submit" class="primary-nav__button" {% if has_active_investment %}disabled{% endif %}>
+        Invest Now
+      </button>
+    </div>
+  </form>
+</section>
+{% endblock %}

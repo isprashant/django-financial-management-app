@@ -1,0 +1,16 @@
+{% extends "ui_gsm/base.html" %}
+{% load static %}
+{% block title %}{{ title|default:"GSM — Large Banner Buttons" }}{% endblock %}
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="stack full-bleed">
+    <a class="banner about" href="{% url 'about' %}"><span>{{ about_label|default:"About KSB" }}</span></a>
+    <a class="banner earn" href="{% url 'earn' %}"><span>{{ earn_label|default:"Start earning money" }}</span></a>
+    <a class="banner join" href="{% url 'join' %}"><span>{{ join_label|default:"Join KSB" }}</span></a>
+    <a class="banner invite" href="{% url 'invite' %}"><span>{{ invite_label|default:"Invite friend" }}</span></a>
+    <a class="banner growth" href="{% url 'growth' %}"><span>{{ growth_label|default:"GROWTH POINTS" }}</span></a>
+  </div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "ui_gsm/base.html" %}
+{% load static %}
+{% block title %}{{ title|default:"Growth Points" }}{% endblock %}
+{% block content %}
+  <section class="card" style="padding: 28px;">
+    <header style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <div>
+        <p class="eyebrow-text" style="letter-spacing: 2px; font-size: 12px; opacity: 0.7;">Rewards</p>
+        <h1 style="font-size: 30px; margin: 6px 0;">{{ heading|default:"Redeem Rewards" }}</h1>
+        <p style="color: rgba(255, 255, 255, 0.7); max-width: 620px;">{{ message|default:"Use your points to redeem exclusive rewards." }}</p>
+      </div>
+      <div style="text-align: right;">
+        <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.6);">Available Points</p>
+        <p style="margin: 0; font-size: 24px; font-weight: 700;">{{ points_balance|default:"Sign in to view" }}</p>
+      </div>
+    </header>
+
+    {% if rewards %}
+      <div style="display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 18px;">
+        {% for reward in rewards %}
+          <a href="{% url 'rewards:reward_detail' reward.id %}" class="reward-card" style="text-decoration: none; color: inherit;">
+            <article style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; height: 100%;">
+              <div style="width: 100%; aspect-ratio: 4 / 3; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;">
+                {% if reward.picture %}
+                  <img src="{{ reward.picture.url }}" alt="{{ reward.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                  <span style="color: rgba(255,255,255,0.5); font-size: 13px;">No image</span>
+                {% endif %}
+              </div>
+              <div style="padding: 14px; display: grid; gap: 6px;">
+                <h3 style="margin: 0; font-size: 18px;">{{ reward.name }}</h3>
+                <p style="margin: 0; color: rgba(255,255,255,0.7); font-size: 14px; min-height: 40px;">{{ reward.description|default:"" }}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: rgba(255,255,255,0.7);">
+                  <span>Cost: {{ reward.points_cost }} pts</span>
+                  <span>Stock: {{ reward.stock }}</span>
+                </div>
+              </div>
+            </article>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="color: rgba(255,255,255,0.7); margin-top: 16px;">No rewards available at the moment.</p>
+    {% endif %}
+  </section>
+{% endblock %}

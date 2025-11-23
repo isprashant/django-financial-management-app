@@ -1,0 +1,7 @@
+{% extends "ui_gsm/base.html" %}
+{% block title %}{{ title|default:"About GSM" }}{% endblock %}
+{% block content %}
+  <h1>{{ heading|default:"About GSM" }}</h1>
+  <p>{{ message|default:"Learn more about the GSM platform." }}</p>
+  <p><a href="{% url 'index' %}">Back to home</a></p>
+{% endblock %}

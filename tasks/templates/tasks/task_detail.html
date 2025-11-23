@@ -1,0 +1,113 @@
+{% extends "ui_gsm/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'task_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="task-detail">
+  <div class="task-detail__card">
+    <header class="task-detail__header">
+      <p class="task-detail__eyebrow">{{ task.task_type.title }}</p>
+      <h1>Task Details</h1>
+    </header>
+
+    <div class="task-detail__content">
+      {% if task.movie %}
+        <div class="task-detail__media">
+          {% if task.movie.poster_url %}
+            <img
+              src="{{ task.movie.poster_url }}"
+              alt="{{ task.movie.title }} poster"
+              class="task-detail__poster"
+            />
+          {% else %}
+            <div class="task-detail__poster task-detail__poster--placeholder">
+              Poster unavailable
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="task-detail__info">
+          <p class="task-detail__badge">Movie Review</p>
+          <h2>{{ task.movie.title }}</h2>
+          {% if task.movie.release_year %}
+            <p class="task-detail__meta">Released in {{ task.movie.release_year }}</p>
+          {% endif %}
+          {% if task.movie.description %}
+            <p class="task-detail__description">{{ task.movie.description }}</p>
+          {% endif %}
+        </div>
+      {% elif task.property_listing %}
+        <div class="task-detail__info task-detail__info--full">
+          <p class="task-detail__badge">Property Review</p>
+          <h2>{{ task.property_listing.title }}</h2>
+          <ul class="task-detail__stats">
+            <li>
+              <span>Location</span>
+              <strong>{{ task.property_listing.location }}</strong>
+            </li>
+            {% if task.property_listing.area_sqft %}
+              <li>
+                <span>Area</span>
+                <strong>{{ task.property_listing.area_sqft|floatformat:0 }} sq.ft</strong>
+              </li>
+            {% endif %}
+            {% if task.property_listing.price_inr %}
+              <li>
+                <span>Price</span>
+                <strong>&#8377;{{ task.property_listing.price_inr|floatformat:0 }}</strong>
+              </li>
+            {% endif %}
+            <li>
+              <span>Property Type</span>
+              <strong>{{ task.property_listing.property_type }}</strong>
+            </li>
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="rating-card">
+    <h3>Share your rating</h3>
+    <p class="rating-card__subtitle">
+      Tap a star to rate this {{ task.movie|yesno:"movie,property" }} and complete the task.
+    </p>
+    <form method="post" class="rating-form">
+      {% csrf_token %}
+      <span class="rating-form__label">{{ form.rating.label }}</span>
+      <div class="rating-stars" role="radiogroup" aria-label="Rate from one to five stars">
+        {% for value, label in form.rating.field.choices %}
+          {% with input_id="id_rating_{{ forloop.counter0 }}" %}
+            <input
+              type="radio"
+              name="{{ form.rating.html_name }}"
+              value="{{ value }}"
+              id="{{ input_id }}"
+              {% if form.rating.value|stringformat:"s" == value|stringformat:"s" %}
+                checked
+              {% endif %}
+              required
+            />
+            <label for="{{ input_id }}" title="{{ label }}">
+              <span class="sr-only">{{ label }}</span>
+            </label>
+          {% endwith %}
+        {% endfor %}
+      </div>
+      {% if form.rating.errors %}
+        <div class="form-errors">
+          {{ form.rating.errors }}
+        </div>
+      {% endif %}
+
+      <div class="rating-form__actions">
+        <button type="submit" class="btn btn--primary">Submit rating</button>
+        <a href="{% url 'tasks:earn' %}" class="rating-form__link">Back to tasks</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

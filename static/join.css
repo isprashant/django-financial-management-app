@@ -1,0 +1,92 @@
+/* Join page styles matching the screenshot */
+:root{
+  --join-bg: #0d2b36;
+  --join-surface: #0f3642;
+  --join-surface-2: #154a5a;
+  --join-text: #d6f0f6;
+  --join-muted: #a6c9d2;
+  --join-shadow: 0 10px 24px rgba(0,0,0,.35);
+  --radius: 12px;
+}
+
+.join-topbar{
+  position: sticky; top: 0; z-index: 1;
+  height: 44px;
+  display: grid; grid-template-columns: 44px 1fr 44px; align-items: center;
+  background: linear-gradient(90deg, #0c3a47, #3d7f8e, #2b4f59);
+  color: #fff; border-radius: 10px; margin: 0 0 12px;
+}
+.join-topbar .back{ color:#fff; text-decoration:none; font-size:22px; display:flex; align-items:center; justify-content:center; }
+.join-topbar h1{ font-size:16px; text-align:center; font-weight:700; letter-spacing:.3px; }
+.join-topbar .spacer{ display:block; }
+
+.tiers{ display:flex; flex-direction:column; gap:18px; }
+
+.tier{
+  display:grid; grid-template-columns: 1fr auto; align-items:center;
+  background: var(--join-surface);
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 2px rgba(72, 146, 163, 0.35), var(--join-shadow);
+  padding: 18px 18px 18px 18px;
+}
+
+.tier__info h2{
+  color:#e9fbff; font-size:40px; line-height:1; margin: 6px 0 12px;
+}
+.tier__info ul{ list-style:none; margin:0; padding:0; color: var(--join-text); font-size:14px; }
+.tier__info li{ opacity:.9; margin: 6px 0; }
+
+.tier__cta{ display:flex; flex-direction:column; align-items:flex-end; gap:12px; padding-left: 24px; }
+
+.btn{
+  background:#2f9ad6; color:#fff; text-decoration:none; font-weight:700;
+  font-size:14px; padding:8px 16px; border-radius:999px;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,.18), 0 6px 18px rgba(0,0,0,.25);
+}
+.btn:hover{ filter:brightness(1.05); }
+
+/* Medals (CSS-based approximation of the star badges with numbers) */
+.badge{ position:relative; width:76px; height:76px; display:grid; place-items:center; border-radius:50%; }
+.badge span{ position:relative; z-index:1; font-size:28px; font-weight:800; color:#0b3a2e; text-shadow: 0 1px 0 rgba(255,255,255,.65); }
+.badge::before{ content:""; position:absolute; inset:-8px; border-radius:50%; filter: drop-shadow(0 8px 16px rgba(0,0,0,.35)); }
+.badge::after{ content:""; position:absolute; inset:6px; border-radius:50%; background:#fff; }
+
+.badge--g1{ background: radial-gradient(circle at 30% 30%, #c1ffcf, #6cdf9b 65%); }
+.badge--g1::before{ background:
+  radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,0) 50%),
+  conic-gradient(from 0deg, #6cdf9b, #93f2bb, #6cdf9b);
+}
+.badge--g2{ background: radial-gradient(circle at 30% 30%, #d5eaff, #8cc8ff 65%); }
+.badge--g2::before{ background:
+  radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,0) 50%),
+  conic-gradient(from 0deg, #8cc8ff, #d0e8ff, #8cc8ff);
+}
+.badge--g3{ background: radial-gradient(circle at 30% 30%, #d9d4ff, #9da0ff 65%); }
+.badge--g3::before{ background:
+  radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,0) 50%),
+  conic-gradient(from 0deg, #9da0ff, #d8d7ff, #9da0ff);
+}
+.badge--g4{ background: radial-gradient(circle at 30% 30%, #ffd2f1, #f3a2d9 65%); }
+.badge--g4::before{ background:
+  radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,0) 50%),
+  conic-gradient(from 0deg, #f3a2d9, #ffd9f2, #f3a2d9);
+}
+.badge--g5{ background: radial-gradient(circle at 30% 30%, #e5ffb9, #b4ec71 65%); }
+.badge--g5::before{ background:
+  radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(255,255,255,0) 50%),
+  conic-gradient(from 0deg, #b4ec71, #e8ffc0, #b4ec71);
+}
+
+/* Responsive spacing to keep proportions similar on smaller screens */
+@media (max-width: 720px){
+  .tier__info h2{ font-size:32px; }
+  .tier__info ul{ font-size:13px; }
+  .badge{ width:64px; height:64px; }
+  .badge span{ font-size:24px; }
+}
+
+@media (max-width: 420px){
+  .tier{ grid-template-columns: 1fr; gap: 12px; }
+  .tier__cta{ align-items:flex-start; flex-direction:row; }
+}
+

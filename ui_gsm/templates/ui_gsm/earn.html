@@ -1,0 +1,239 @@
+{% extends "ui_gsm/base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+  .earn-summary {
+    display: flex;
+    align-items: stretch;
+    background: #1a3648;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+    margin: 16px 0 24px;
+    overflow: hidden;
+  }
+
+  .earn-summary__item {
+    flex: 1 1 0;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+
+  .earn-summary__divider {
+    width: 1px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 12px 0;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 style='text-align: center;'>Earn by Completing Tasks</h2><br>
+   <p style='text-align: center;'>Today: {{ today }}</p>
+  <div class="earn-summary" role="status" aria-label="Task summary">
+    <div class="earn-summary__item">
+      Pending Tasks: {{ pending_tasks|length }}
+    </div>
+    <span class="earn-summary__divider" aria-hidden="true"></span>
+    <div class="earn-summary__item">
+      Completed Tasks:
+      {% if max_daily_tasks %}
+        {{ completed_count }} / {{ max_daily_tasks }}
+      {% else %}
+        {{ completed_count }}
+      {% endif %}
+    </div>
+  </div>
+
+
+  {% if messages %}
+    <ul class="list-unstyled">
+      {% for message in messages %}
+        <li class="alert alert-{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if pending_tasks %}
+    <ul class="list-group">
+                <div class="card-grid">
+      {% for task in pending_tasks %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+<br>
+
+            {% if task.movie %}
+                <article class="card">
+                <div
+                  class="card__image card__image--1"
+                  style="background-image: url('{{ task.movie.poster_url }}');"
+                ></div>
+                <div class="card__body">
+                <h3>{{ task.movie.title }}</h3>
+                <p class="card__meta">Release: {{task.movie.release_year}}</p>
+               <a href="{% url 'tasks:task_detail' task.pk %}"> <button class="btn btn--primary">
+                  Rate</button>
+               </a>
+              </div>
+              </article>
+            {% elif task.property_listing %}
+              {% comment %} Property: {{ task.property_listing.title }} ({{ task.property_listing.location }}) {% endcomment %}
+
+              <article class="card">
+                <div
+                  class="card__image card__image--1"
+                ></div>
+                <div class="card__body">
+                <h3>{{ task.property_listing.title }}</h3>
+                <p class="card__meta">Location: {{task.property_listing.location}}</p>
+               <a href="{% url 'tasks:task_detail' task.pk %}"> <button class="btn btn--primary">
+                  Rate</button>
+               </a>
+              </div>
+              </article>
+            {% endif %}
+        </li>
+      {% endfor %}
+            </div>
+    </ul>
+  {% else %}
+    <p>No pending tasks for today. Come back later!</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+
+{% comment %} {% extends "ui_gsm/base.html" %}
+{% block title %}{{ title|default:"Start Earning" }}{% endblock %}
+{% block content %}
+  <p><a href="{% url 'index' %}">Back to home</a></p>
+   <div class="section-header">
+          <h2>Start earning money</h2>
+          <a href="#" class="link">See All</a>
+        </div>
+        <div class="card-grid">
+          <article class="card">
+            <div class="card__image card__image--1"></div>
+            <div class="card__body">
+              <h3>Snake's Hug</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__image card__image--1"></div>
+            <div class="card__body">
+              <h3>Night Walker</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__image card__image--2"></div>
+            <div class="card__body">
+              <h3>Boyhood</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__image card__image--2"></div>
+            <div class="card__body">
+              <h3>The Intern</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__image card__image--3"></div>
+            <div class="card__body">
+              <h3>Anyone But You</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__image card__image--4"></div>
+            <div class="card__body">
+              <h3>Angels & Devils</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__image card__image--4"></div>
+            <div class="card__body">
+              <h3>Don't Leave</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__image card__image--3"></div>
+            <div class="card__body">
+              <h3>Angel Falls</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__image card__image--3"></div>
+            <div class="card__body">
+              <h3>Carol</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__image card__image--1"></div>
+            <div class="card__body">
+              <h3>Snake's Hug</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__image card__image--1"></div>
+            <div class="card__body">
+              <h3>Snake's Hug</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__image card__image--1"></div>
+            <div class="card__body">
+              <h3>Snake's Hug</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card__image card__image--1"></div>
+            <div class="card__body">
+              <h3>Snake's Hug</h3>
+              <p class="card__meta">View • 23747494 times</p>
+              <p class="card__meta">Commission : 13.00</p>
+              <button class="btn btn--primary">Rating now</button>
+            </div>
+          </article>
+
+{% endblock %} {% endcomment %}

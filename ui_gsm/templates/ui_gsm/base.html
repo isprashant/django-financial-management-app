@@ -1,0 +1,117 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}{{ title|default:"KSB" }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <style>
+    .primary-nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(8px);
+      justify-content: space-between;
+    }
+
+    .primary-nav__group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .primary-nav__link,
+    .primary-nav__button {
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: rgba(247, 247, 255, 0.8);
+      padding: 12px 18px;
+      border-radius: 999px;
+      text-align: center;
+      transition: background 0.2s ease, color 0.2s ease;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    .primary-nav__link:hover,
+    .primary-nav__button:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .primary-nav__link--active {
+      background: linear-gradient(135deg, rgba(255, 61, 113, 0.3), rgba(62, 155, 255, 0.45));
+      color: #fff;
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="layout">
+    <div class="wrap">
+      <nav class="primary-nav" aria-label="Primary navigation">
+        <div class="primary-nav__group">
+          <a
+            href="{% url 'index' %}"
+            class="primary-nav__link{% if request.path == '/' %} primary-nav__link--active{% endif %}"
+          >
+            Home
+          </a>
+          <a
+            href="{% url 'funds' %}"
+            class="primary-nav__link{% if request.path == '/funds/' %} primary-nav__link--active{% endif %}"
+          >
+            Funds
+          </a>
+          <a
+            href="{% url 'earn' %}"
+            class="primary-nav__link{% if request.path == '/earn/' %} primary-nav__link--active{% endif %}"
+          >
+            Profit
+          </a>
+          <a
+            href="{% url 'profile' %}"
+            class="primary-nav__link{% if request.path == '/profile/' %} primary-nav__link--active{% endif %}"
+          >
+            Mine
+          </a>
+        </div>
+        <div class="primary-nav__group">
+          {% if request.user.is_authenticated %}
+            <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+              {% csrf_token %}
+              <button type="submit" class="primary-nav__button">
+                Logout
+              </button>
+            </form>
+          {% else %}
+            <a
+              href="{% url 'login' %}"
+              class="primary-nav__link{% if request.resolver_match.url_name == 'login' %} primary-nav__link--active{% endif %}"
+            >
+              Login
+            </a>
+          {% endif %}
+        </div>
+      </nav>
+      {% block content %}{% endblock %}
+    </div>
+    <footer style="text-align:center; margin: 24px 0; opacity:.8;">
+      <small>&copy; {% now "Y" %}</small>
+    </footer>
+  </div>
+</body>
+</html>

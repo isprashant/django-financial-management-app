@@ -1,0 +1,62 @@
+{% extends "ui_gsm/base.html" %}
+{% load static %}
+{% block title %}{{ title|default:"Share" }}{% endblock %}
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'invite.css' %}">
+{% endblock %}
+{% block content %}
+  <header class="invite-topbar">
+    <a class="back" href="{% url 'index' %}" aria-label="Back">&#8592;</a>
+    <h1>share</h1>
+    <span class="spacer" aria-hidden="true"></span>
+  </header>
+
+  <section class="invite-hero">
+    <div class="center">
+      {% if invite_link %}
+        <div class="card qr-card">
+          <img
+            src="{{ qr_url|default_if_none:'' }}"
+            width="220" height="220" alt="QR code for your referral link">
+        </div>
+
+        <div class="card code-card">
+          <label>Invitation code</label>
+          <div class="code" id="inviteCode">{{ invite_code }}</div>
+          <button class="copy-btn" data-copy-target="#inviteCode">copy</button>
+        </div>
+
+        <div class="card link-card">
+          <div class="link" id="inviteLink">{{ invite_link }}</div>
+          <button class="copy-btn" data-copy-target="#inviteLink">copy</button>
+        </div>
+
+        <p class="hint">Share your invitation link or QR code with your family and friends, they will get a new income in KSB and change their lives!</p>
+      {% else %}
+        <div class="card" style="text-align:center; padding: 24px;">
+          <p style="margin: 0; color: rgba(255,255,255,0.8);">Sign in to get your personal referral link and QR code.</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <script>
+    document.addEventListener('click', function (e) {
+      const btn = e.target.closest('.copy-btn');
+      if (!btn) return;
+      const targetSel = btn.getAttribute('data-copy-target');
+      const el = document.querySelector(targetSel);
+      if (!el) return;
+      const text = el.textContent.trim();
+      navigator.clipboard && navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'copied';
+        setTimeout(() => btn.textContent = 'copy', 800);
+      }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); btn.textContent = 'copied'; setTimeout(() => btn.textContent='copy',800); }
+        finally { document.body.removeChild(ta); }
+      });
+    });
+  </script>
+{% endblock %}

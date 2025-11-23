@@ -1,0 +1,72 @@
+{% extends "ui_gsm/base.html" %}
+{% block title %}{{ title|default:"Join KSB" }}{% endblock %}
+{% block content %}
+<div style="margin: -20px -24px 0; padding: 0 24px 24px;">
+  <header style="background: linear-gradient(90deg, #0a4661, #4c6b8a); border-radius: 0 0 16px 16px; padding: 12px 18px; display: flex; align-items: center; justify-content: center; position: relative;">
+    <a href="{% url 'index' %}" style="position: absolute; left: 14px; color: #fff; text-decoration: none; font-size: 18px;">←</a>
+    <h1 style="margin: 0; font-size: 18px; color: #fff;">Join KSB</h1>
+  </header>
+
+  {% if success_message %}
+    <div style="background: rgba(70, 255, 150, 0.1); border: 1px solid rgba(70,255,150,0.3); color: #a0ffcf; padding: 10px; border-radius: 10px; margin-top: 16px;">
+      {{ success_message }}
+    </div>
+  {% endif %}
+  {% if error_message %}
+    <div style="background: rgba(255, 70, 70, 0.1); border: 1px solid rgba(255,70,70,0.3); color: #ffa0a0; padding: 10px; border-radius: 10px; margin-top: 16px;">
+      {{ error_message }}
+    </div>
+  {% endif %}
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin: 18px 0 10px;">
+    <div>
+      <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.7);">Pick a plan to start earning</p>
+    </div>
+    {% if personal_balance is not None %}
+      <div style="text-align: right;">
+        <p style="margin: 0; font-size: 12px; color: rgba(255,255,255,0.6);">Personal wallet</p>
+        <p style="margin: 0; font-size: 18px; font-weight: 700;">₹ {{ personal_balance }}</p>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if subscription %}
+    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); padding: 12px 14px; border-radius: 12px; margin-bottom: 12px;">
+      <span style="font-size: 13px; color: rgba(255,255,255,0.8);">Current plan: <strong>{{ subscription.plan.name }}</strong> • ₹ {{ subscription.plan.daily_task_reward_amount }} per task • {{ subscription.plan.max_daily_tasks }} tasks/day</span>
+    </div>
+  {% endif %}
+
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    {% for plan in plans %}
+      <article style="background: #0e2f45; border: 1px solid #1f5676; border-radius: 14px; padding: 16px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px;">
+        <div>
+          <h3 style="margin: 0 0 4px; font-size: 22px; color: #e8f4ff;">{{ plan.name }}</h3>
+          <p style="margin: 0; font-size: 13px; color: #b8d8ff;">Deposit: ₹ {{ plan.join_fee }}</p>
+          <p style="margin: 0; font-size: 13px; color: #b8d8ff;">Daily Tasks: {{ plan.max_daily_tasks }}</p>
+          <p style="margin: 0; font-size: 13px; color: #b8d8ff;">₹ {{ plan.daily_task_reward_amount }} / Each Order</p>
+        </div>
+        <div style="text-align: right;">
+          {% if plan.badge %}
+            <div style="margin-bottom: 8px;">
+              <img src="{{ plan.badge.url }}" alt="{{ plan.name }} badge" style="width: 100px; height: 100px; object-fit: contain;">
+            </div>
+          {% endif %}
+          {% if subscription and plan.id == current_plan_id %}
+            <span style="display: inline-block; padding: 8px 12px; background: #243a4f; border-radius: 20px; color: #9cc5ff; font-weight: 600;">Current</span>
+          {% elif not user.is_authenticated %}
+            <a class="primary-nav__button" href="{% url 'login' %}">Login to join</a>
+          {% else %}
+            <form method="post" style="margin: 0;">
+              {% csrf_token %}
+              <input type="hidden" name="plan_id" value="{{ plan.id }}">
+              <button type="submit" class="primary-nav__button">Join now</button>
+            </form>
+          {% endif %}
+        </div>
+      </article>
+    {% empty %}
+      <p style="color: rgba(255,255,255,0.7);">No plans available right now.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

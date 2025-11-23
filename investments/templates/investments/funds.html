@@ -1,0 +1,118 @@
+{% extends "ui_gsm/base.html" %}
+
+{% block title %}Funds{% endblock %}
+
+{% block content %}
+<section class="card" style="padding: 32px;">
+  <header style="margin-bottom: 18px;">
+    <p class="eyebrow-text" style="letter-spacing: 2px; font-size: 12px; opacity: 0.7;">
+      Portfolio Snapshot
+    </p>
+    <h1 style="font-size: 28px; margin-bottom: 6px;">Funds & Investments</h1>
+    <p style="color: rgba(255, 255, 255, 0.7); max-width: 620px;">
+      Review wallet balances, active investments, and explore new schemes.
+    </p>
+  </header>
+  <div style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 12px;">
+    <article class="stat-card">
+      <h3>Personal Wallet</h3>
+      <p class="stat-value" style="font-size: 28px;">Rs {{ personal_balance|floatformat:2 }}</p>
+      <p style="color: rgba(255, 255, 255, 0.7); font-size: 14px;">Available for immediate withdrawals.</p>
+    </article>
+    <article class="stat-card">
+      <h3>Investment Wallet</h3>
+      <p class="stat-value" style="font-size: 28px;">Rs {{ investment_balance|floatformat:2 }}</p>
+      <p style="color: rgba(255, 255, 255, 0.7); font-size: 14px;">Daily returns are deposited here.</p>
+    </article>
+    <article class="stat-card">
+      <h3>Total Balance</h3>
+      <p class="stat-value" style="font-size: 28px;">Rs {{ total_balance|floatformat:2 }}</p>
+      <p style="color: rgba(255, 255, 255, 0.7); font-size: 14px;">Combined amount across all wallets.</p>
+    </article>
+  </div>
+</section>
+
+<section class="card" style="padding: 32px; margin-top: 20px;">
+  <header style="display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 16px;">
+    <div>
+      <p class="eyebrow-text" style="letter-spacing: 2px; font-size: 12px; opacity: 0.7;">
+        Active Positions
+      </p>
+      <h2 style="font-size: 24px;">Your Investments</h2>
+      <p style="color: rgba(255, 255, 255, 0.7); max-width: 620px;">
+        Track each investment's amount, cycle, and credited returns.
+      </p>
+    </div>
+  </header>
+  {% if user_investments %}
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; min-width: 780px;">
+        <thead>
+          <tr style="text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.6);">
+            <th style="padding: 10px;">Scheme</th>
+            <th style="padding: 10px;">Amount</th>
+            <th style="padding: 10px;">Cycle</th>
+            <th style="padding: 10px;">Status</th>
+            <th style="padding: 10px;">Started</th>
+            <th style="padding: 10px;">Ends</th>
+            <th style="padding: 10px;">Returns Credited</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inv in user_investments %}
+            <tr style="border-top: 1px solid rgba(255,255,255,0.08);">
+              <td style="padding: 12px; font-weight: 600;">{{ inv.scheme.name }}</td>
+              <td style="padding: 12px;">Rs {{ inv.amount_invested|floatformat:2 }}</td>
+              <td style="padding: 12px;">{{ inv.scheme.cycle_days }} days</td>
+              <td style="padding: 12px;">{{ inv.status }}</td>
+              <td style="padding: 12px;">{{ inv.started_at|date:"M d, Y" }}</td>
+              <td style="padding: 12px;">{{ inv.ends_at|date:"M d, Y" }}</td>
+              <td style="padding: 12px;">Rs {{ inv.total_returns|default:0|floatformat:2 }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="color: rgba(255, 255, 255, 0.7); margin: 0;">You have no investments yet. Explore a scheme to get started.</p>
+  {% endif %}
+</section>
+
+<section class="card" style="padding: 32px; margin-top: 20px;">
+  <header style="display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 16px;">
+    <div>
+      <p class="eyebrow-text" style="letter-spacing: 2px; font-size: 12px; opacity: 0.7;">
+        Opportunities
+      </p>
+      <h2 style="font-size: 24px;">Available Investment Schemes</h2>
+      <p style="color: rgba(255, 255, 255, 0.7); max-width: 620px;">
+        Each scheme is available to all users. Pick one to view details and invest.
+      </p>
+    </div>
+  </header>
+  {% if schemes %}
+    <div style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+      {% for scheme in schemes %}
+        <article class="stat-card" style="display: flex; flex-direction: column; gap: 10px;">
+          <div>
+            <p class="eyebrow-text" style="letter-spacing: 1px; font-size: 11px; opacity: 0.7; margin: 0;">{{ scheme.company_name }}</p>
+            <h3 style="margin: 4px 0 6px 0;">{{ scheme.name }}</h3>
+            <p style="color: rgba(255, 255, 255, 0.7); margin: 0;">Cycle: {{ scheme.cycle_days }} days • Daily Return: {{ scheme.daily_return_percent }}%</p>
+          </div>
+          <p style="margin: 0; color: rgba(255, 255, 255, 0.8);">Range: Rs {{ scheme.min_amount|floatformat:2 }} - Rs {{ scheme.max_amount|floatformat:2 }}</p>
+          {% if scheme.terms_url %}
+            <a href="{{ scheme.terms_url }}" target="_blank" rel="noopener" style="color: #9dc6ff;">View terms</a>
+          {% endif %}
+          <div style="margin-top: auto;">
+            <a href="{% url 'investment_detail' scheme.id %}" class="primary-nav__link" style="display: inline-block; padding: 10px 16px;">
+              View Details
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p style="color: rgba(255, 255, 255, 0.7); margin: 0;">No investment schemes are available right now.</p>
+  {% endif %}
+</section>
+{% endblock %}

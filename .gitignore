@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+# Django / Python artifacts
+db.sqlite3
+*.log
+*.pot
+*.pyc
+
+# Media / uploads
+media/
+
+# Static build artifacts
+staticfiles/
+
+# Local settings
+*.local.py
+
+# Migrations (generated files)
+*/migrations/__pycache__/
+*/migrations/*.pyc
+*/migrations/*.pyo
+*/migrations/*.orig
+
+# Node / frontend
+node_modules/
+
+# IDE/editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# macOS
+.DS_Store

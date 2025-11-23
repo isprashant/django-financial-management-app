@@ -1,0 +1,190 @@
+{% extends "ui_gsm/base.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<section class="card" style="padding: 32px;">
+  <header style="margin-bottom: 24px; display: flex; justify-content: space-between; gap: 16px; align-items: flex-start;">
+    <div>
+      <p class="eyebrow-text" style="letter-spacing: 2px; font-size: 12px; opacity: 0.7;">
+        Account
+      </p>
+      <h1 style="font-size: 30px;">My Profile</h1>
+      <p style="color: rgba(255, 255, 255, 0.7); max-width: 620px;">
+        Review the information tied to your KSB account. These details are pulled from your Profile records.
+      </p>
+    </div>
+    <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+      {% csrf_token %}
+      <button type="submit" class="primary-nav__button">
+        Logout
+      </button>
+    </form>
+  </header>
+
+  <div style="display: grid; gap: 32px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+    <article class="stat-card" style="padding: 20px;">
+      <h3 style="margin-bottom: 10px; font-size: 16px; opacity: 0.8;">Account Basics</h3>
+      <dl class="profile-list">
+        <div>
+          <dt>Username</dt>
+          <dd>{{ request.user.username }}</dd>
+        </div>
+        <div>
+          <dt>Email</dt>
+          <dd>{{ request.user.email|default:"" }}</dd>
+        </div>
+        <div>
+          <dt>Joined</dt>
+          <dd>{{ request.user.date_joined|date:"M d, Y" }}</dd>
+        </div>
+      </dl>
+    </article>
+
+    <article class="stat-card" style="padding: 20px;">
+      <h3 style="margin-bottom: 10px; font-size: 16px; opacity: 0.8;">Profile Details</h3>
+      {% if profile %}
+        <dl class="profile-list">
+          <div>
+            <dt>Full Name</dt>
+            <dd>{{ profile.full_name }}</dd>
+          </div>
+          <div>
+            <dt>Mobile Number</dt>
+            <dd>{{ profile.mobile_number }}</dd>
+          </div>
+          <div>
+            <dt>Withdrawal Method</dt>
+            <dd>{{ profile.withdrawal_method }}</dd>
+          </div>
+          <div>
+            <dt>Withdrawal Details</dt>
+            <dd>{{ profile.withdrawal_details }}</dd>
+          </div>
+        </dl>
+      {% else %}
+        <p style="color: rgba(255, 255, 255, 0.7);">
+          You have not completed your profile yet. Please contact support to finish onboarding.
+        </p>
+      {% endif %}
+    </article>
+
+    <article class="stat-card" style="padding: 20px;">
+      <h3 style="margin-bottom: 10px; font-size: 16px; opacity: 0.8;">KYC & Referrals</h3>
+      <dl class="profile-list">
+        {% if profile %}
+          <div>
+            <dt>KYC Status</dt>
+            <dd>{{ profile.kyc_status }}</dd>
+          </div>
+          <div>
+            <dt>Document Type</dt>
+            <dd>{{ profile.kyc_document_type|default:"" }}</dd>
+          </div>
+          <div>
+            <dt>Document Number</dt>
+            <dd>{{ profile.kyc_document_number|default:"" }}</dd>
+          </div>
+        {% else %}
+          <div>
+            <dt>KYC Status</dt>
+            <dd>Not provided</dd>
+          </div>
+        {% endif %}
+
+        {% if referral_code %}
+          <div>
+            <dt>Referral Code</dt>
+            <dd>{{ referral_code.code }}</dd>
+          </div>
+          <div>
+            <dt>Referral Link</dt>
+            <dd>{{ referral_link }}</dd>
+          </div>
+        {% else %}
+          <div>
+            <dt>Referral Code</dt>
+            <dd>Generating...</dd>
+          </div>
+        {% endif %}
+      </dl>
+    </article>
+  </div>
+</section>
+
+<section class="card" style="padding: 32px; margin-top: 32px;">
+  <header style="margin-bottom: 18px;">
+    <p class="eyebrow-text" style="letter-spacing: 2px; font-size: 12px; opacity: 0.7;">
+      Daily Statement
+    </p>
+    <h2 style="font-size: 24px;">Earnings & Activity</h2>
+    <p style="color: rgba(255, 255, 255, 0.7); max-width: 620px;">
+      Snapshot of your recent daily statement records including earnings, redemptions, and withdrawals.
+    </p>
+  </header>
+
+  {% if statements %}
+    <div class="table-responsive" style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; min-width: 720px;">
+        <thead>
+          <tr style="text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.6);">
+            <th style="padding: 10px;">Date</th>
+            <th style="padding: 10px;">Task Earnings</th>
+            <th style="padding: 10px;">Referral Earnings</th>
+            <th style="padding: 10px;">Investment Earnings</th>
+            <th style="padding: 10px;">Redeemed Points</th>
+            <th style="padding: 10px;">Cumulative Earnings</th>
+            <th style="padding: 10px;">Withdrawals</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for statement in statements %}
+            <tr style="border-top: 1px solid rgba(255,255,255,0.08);">
+              <td style="padding: 12px;">{{ statement.date|date:"M d, Y" }}</td>
+              <td style="padding: 12px;">{{ statement.earnings_from_tasks }}</td>
+              <td style="padding: 12px;">{{ statement.earnings_from_referrals }}</td>
+              <td style="padding: 12px;">{{ statement.earnings_from_investments }}</td>
+              <td style="padding: 12px;">{{ statement.redeemed_points }}</td>
+              <td style="padding: 12px;">{{ statement.cumulative_earnings }}</td>
+              <td style="padding: 12px;">{{ statement.withdrawals }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="color: rgba(255, 255, 255, 0.7);">
+      No daily statements available yet. Complete tasks or transactions to generate activity.
+    </p>
+  {% endif %}
+</section>
+
+<style>
+  .profile-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .profile-list div {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 14px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .profile-list dt {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 4px;
+  }
+
+  .profile-list dd {
+    margin: 0;
+    font-size: 16px;
+    color: #fff;
+  }
+</style>
+{% endblock %}
