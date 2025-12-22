@@ -82,6 +82,68 @@
   <header style="display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 16px;">
     <div>
       <p class="eyebrow-text" style="letter-spacing: 2px; font-size: 12px; opacity: 0.7;">
+        Completed Positions
+      </p>
+      <h2 style="font-size: 24px;">Past Investments</h2>
+      <p style="color: rgba(255, 255, 255, 0.7); max-width: 620px;">
+        Review finished investments, total returns credited, and credit logs.
+      </p>
+    </div>
+  </header>
+  {% if completed_investments %}
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; min-width: 880px;">
+        <thead>
+          <tr style="text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.6);">
+            <th style="padding: 10px;">Scheme</th>
+            <th style="padding: 10px;">Amount</th>
+            <th style="padding: 10px;">Cycle</th>
+            <th style="padding: 10px;">Started</th>
+            <th style="padding: 10px;">Ended</th>
+            <th style="padding: 10px;">Returns Credited</th>
+            <th style="padding: 10px;">Credit Logs</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inv in completed_investments %}
+            <tr style="border-top: 1px solid rgba(255,255,255,0.08);">
+              <td style="padding: 12px; font-weight: 600;">{{ inv.scheme.name }}</td>
+              <td style="padding: 12px;">Rs {{ inv.amount_invested|floatformat:2 }}</td>
+              <td style="padding: 12px;">{{ inv.scheme.cycle_days }} days</td>
+              <td style="padding: 12px;">{{ inv.started_at|date:"M d, Y" }}</td>
+              <td style="padding: 12px;">{{ inv.ends_at|date:"M d, Y" }}</td>
+              <td style="padding: 12px;">Rs {{ inv.total_returns|default:0|floatformat:2 }}</td>
+              <td style="padding: 12px; min-width: 220px;">
+                <div style="font-size: 13px; color: rgba(255,255,255,0.8);">
+                  <strong>{{ inv.return_count|default:0 }}</strong> credit{{ inv.return_count|default:0|pluralize }} logged
+                  {% if inv.return_logs.all %}
+                    <ul style="margin: 8px 0 0 16px; padding: 0; list-style: disc;">
+                      {% for log in inv.return_logs.all|slice:":5" %}
+                        <li style="margin-bottom: 4px; color: rgba(255,255,255,0.75);">
+                          {{ log.date|date:"M d, Y" }} &mdash; Rs {{ log.return_amount|floatformat:2 }}
+                        </li>
+                      {% endfor %}
+                      {% if inv.return_logs|length > 5 %}
+                        <li style="margin-bottom: 0; color: rgba(255,255,255,0.6);">...and more</li>
+                      {% endif %}
+                    </ul>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p style="color: rgba(255, 255, 255, 0.7); margin: 0;">No past investments yet.</p>
+  {% endif %}
+</section>
+
+<section class="card" style="padding: 32px; margin-top: 20px;">
+  <header style="display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 16px;">
+    <div>
+      <p class="eyebrow-text" style="letter-spacing: 2px; font-size: 12px; opacity: 0.7;">
         Opportunities
       </p>
       <h2 style="font-size: 24px;">Available Investment Schemes</h2>

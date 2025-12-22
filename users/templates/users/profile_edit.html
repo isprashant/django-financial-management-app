@@ -1,0 +1,31 @@
+{% extends "ui_gsm/base.html" %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<section class="card" style="padding: 32px;">
+  <header style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <p class="eyebrow-text" style="letter-spacing: 2px; font-size: 12px; opacity: 0.7;">Profile</p>
+      <h1 style="font-size: 26px; margin: 4px 0;">Edit Profile</h1>
+    </div>
+    <a href="{% url 'profile' %}" class="primary-nav__link">Back to profile</a>
+  </header>
+
+  <form method="post" style="display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+    {% csrf_token %}
+    {% for field in form %}
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <label style="font-size: 13px; opacity: 0.8;">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div style="color: #ff7b7b; font-size: 12px;">{{ field.errors|join:", " }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <div style="grid-column: 1 / -1; margin-top: 10px;">
+      <button type="submit" class="primary-nav__button">Save changes</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

@@ -1,7 +1,9 @@
 {% extends "ui_gsm/base.html" %}
+{% load static %}
 {% block title %}{{ title|default:"About GSM" }}{% endblock %}
 {% block content %}
-  <h1>{{ heading|default:"About GSM" }}</h1>
-  <p>{{ message|default:"Learn more about the GSM platform." }}</p>
+  <h1>{{ heading|default:"About KSB" }}</h1>
+  <p>{{ message|default:"Learn more about the KSB platform." }}</p>
+  <img src="{% static 'ui_gsm/about.png' %}" alt="About GSM" width="100%" />
   <p><a href="{% url 'index' %}">Back to home</a></p>
 {% endblock %}

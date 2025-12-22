@@ -243,6 +243,9 @@ def credit_returns_for_investment(
 
     end_date = min(target_date, investment.ends_at.date())
     if end_date < next_date:
+        # Even if no returns to credit, still finalize if past end date
+        if target_date >= investment.ends_at.date():
+            _complete_investment_if_due(investment)
         return 0
 
     credited_days = 0
@@ -250,6 +253,10 @@ def credit_returns_for_investment(
         if _credit_single_return(investment, next_date):
             credited_days += 1
         next_date += timedelta(days=1)
+
+    # Finalize investment if cycle complete
+    if target_date >= investment.ends_at.date():
+        _complete_investment_if_due(investment)
 
     return credited_days
 
@@ -274,3 +281,55 @@ def credit_daily_returns(for_date=None) -> int:
         )
 
     return total_credited
+
+
+def _complete_investment_if_due(investment: UserInvestment) -> bool:
+    """
+    Mark an investment as completed and refund principal if it has ended.
+    Returns True if completion was applied.
+    """
+    now = timezone.now()
+    if investment.ends_at > now:
+        return False
+
+    with transaction.atomic():
+        inv = (
+            UserInvestment.objects.select_for_update()
+            .select_related("user")
+            .get(pk=investment.pk)
+        )
+        if inv.status != "ACTIVE":
+            return False
+        if inv.ends_at > now:
+            return False
+
+        wallets = _get_wallets(inv.user)
+        personal_wallet = Wallet.objects.select_for_update().get(pk=wallets.personal.pk)
+
+        # Avoid double refund
+        already_refunded = WalletTransaction.objects.filter(
+            wallet=personal_wallet,
+            txn_type="INVESTMENT_PRINCIPAL_REFUND",
+            reference_type="UserInvestment",
+            reference_id=str(inv.id),
+        ).exists()
+
+        if not already_refunded:
+            personal_wallet.balance += inv.amount_invested
+            personal_wallet.save(update_fields=["balance", "updated_at"])
+
+            WalletTransaction.objects.create(
+                wallet=personal_wallet,
+                txn_type="INVESTMENT_PRINCIPAL_REFUND",
+                amount=inv.amount_invested,
+                is_credit=True,
+                description=f"Principal refund for {inv.scheme.name}",
+                reference_type="UserInvestment",
+                reference_id=str(inv.id),
+            )
+
+        inv.status = "COMPLETED"
+        inv.save(update_fields=["status", "updated_at"])
+        return True
+
+    return False

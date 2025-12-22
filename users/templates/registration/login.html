@@ -2,11 +2,247 @@
 
 {% block title %}Log In{% endblock title %}
 
+{% block extra_head %}
+<style>
+  .auth-shell {
+    padding: 42px 0 64px;
+  }
+
+  .auth-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 28px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 26px 60px rgba(0, 0, 0, 0.35);
+  }
+
+  .auth-hero {
+    background: linear-gradient(145deg, rgba(255, 61, 113, 0.25), rgba(62, 155, 255, 0.2));
+    border-radius: 18px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .auth-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12), transparent 50%),
+      radial-gradient(circle at 80% 10%, rgba(0, 0, 0, 0.12), transparent 55%);
+    pointer-events: none;
+  }
+
+  .auth-hero h1 {
+    font-size: clamp(28px, 4vw, 36px);
+    margin-bottom: 12px;
+  }
+
+  .auth-hero p {
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 44ch;
+  }
+
+  .auth-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .auth-pill {
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(12, 12, 20, 0.32);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+  }
+
+  .auth-card {
+    background: rgba(12, 12, 20, 0.78);
+    border-radius: 18px;
+    padding: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    display: grid;
+    gap: 18px;
+  }
+
+  .auth-card header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .auth-badge {
+    align-self: flex-start;
+    background: rgba(255, 61, 113, 0.16);
+    color: var(--accent);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 12px;
+  }
+
+  .auth-card h2 {
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .auth-card p {
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .auth-form {
+    display: grid;
+    gap: 16px;
+  }
+
+  .auth-field {
+    display: grid;
+    gap: 8px;
+  }
+
+  .auth-field label {
+    font-weight: 600;
+    font-size: 14px;
+    color: rgba(247, 247, 255, 0.9);
+  }
+
+  .auth-field input,
+  .auth-field select,
+  .auth-field textarea {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    padding: 12px 14px;
+    outline: none;
+  }
+
+  .auth-field input:focus,
+  .auth-field select:focus,
+  .auth-field textarea:focus {
+    border-color: rgba(255, 61, 113, 0.6);
+    box-shadow: 0 0 0 3px rgba(255, 61, 113, 0.18);
+  }
+
+  .auth-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .auth-error {
+    color: #ff8c9f;
+    font-size: 12px;
+  }
+
+  .auth-alert {
+    background: rgba(255, 140, 159, 0.12);
+    border: 1px solid rgba(255, 140, 159, 0.35);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #ffd5dc;
+    font-weight: 600;
+  }
+
+  .auth-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .auth-actions button {
+    background: linear-gradient(120deg, #ff3d71, #3e9bff);
+    border: none;
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+  }
+
+  .auth-actions button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.36);
+  }
+
+  .auth-actions a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .auth-actions a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Log In</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn btn-success ml-2" type="submit">Log In</button>
-</form>
+<section class="auth-shell">
+  <div class="auth-grid">
+    <div class="auth-hero">
+      <h1>Welcome back to KSB</h1>
+      <p>Log in to track your balances, finish daily tasks, and unlock rewards tailored to your plan.</p>
+      <div class="auth-pills">
+        <span class="auth-pill">Encrypted session</span>
+        <span class="auth-pill">2-step ready</span>
+        <span class="auth-pill">Fast payouts</span>
+      </div>
+    </div>
+
+    <div class="auth-card">
+      <header>
+        <span class="auth-badge">Secure Access</span>
+        <h2>Sign in to continue</h2>
+        <p>Use your account credentials to continue building with KSB.</p>
+      </header>
+
+      {% if form.non_field_errors %}
+        <div class="auth-alert">
+          {{ form.non_field_errors|striptags }}
+        </div>
+      {% endif %}
+
+      <form method="post" class="auth-form">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="auth-field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <div class="auth-hint">{{ field.help_text|striptags }}</div>
+            {% endif %}
+            {% if field.errors %}
+              <div class="auth-error">{{ field.errors|striptags }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <div class="auth-actions">
+          <button type="submit">Log In</button>
+          <a href="{% url 'signup' %}">Need an account? Join</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
 {% endblock content %}

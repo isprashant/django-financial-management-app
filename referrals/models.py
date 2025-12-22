@@ -58,4 +58,6 @@ class Referral(TimeStampedModel):
     awarded_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.referrer_id} -> {self.referred_id or 'PENDING'}"
+        referrer_name = getattr(self.referrer, "username", self.referrer_id)
+        referred_name = getattr(self.referred, "username", None) or "PENDING"
+        return f"{referrer_name} -> {referred_name}"

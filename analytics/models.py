@@ -28,3 +28,7 @@ class DailyUserStatement(TimeStampedModel):
     class Meta:
         unique_together = ("user", "date")
         ordering = ("-date",)
+
+    def __str__(self):
+        username = getattr(self.user, "username", self.user_id)
+        return f"{username} @ {self.date}"

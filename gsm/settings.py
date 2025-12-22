@@ -52,8 +52,8 @@ ROOT_URLCONF = "gsm.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        # Using app templates via APP_DIRS; project-level DIRS can be added if needed
-        "DIRS": [],
+        # Include project-level templates (e.g., admin overrides in templates/admin/)
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -92,6 +92,7 @@ USE_TZ = True
 
 # Static files
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 # Look for static assets in the project-level `static/` folder
 STATICFILES_DIRS = [BASE_DIR / "static"]
 

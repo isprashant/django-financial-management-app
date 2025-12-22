@@ -1,12 +1,15 @@
 from decimal import Decimal
 from datetime import date
+from typing import Iterable
+from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.db.models import Count
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
 from django.conf import settings
 
-from tasks.models import UserTask
+from tasks.models import Movie, PropertyListing, TaskType, UserTask
 from wallets.models import Wallet, WalletTransaction
 from plans.models import UserSubscription
 from analytics.models import DailyUserStatement
@@ -169,3 +172,64 @@ def rollover_pending_tasks(target_date: date | None = None) -> int:
     stale_tasks = UserTask.objects.filter(status="PENDING", date__lt=target_date)
     updated_count = stale_tasks.update(date=target_date, updated_at=now)
     return updated_count
+
+
+def create_tasks_for_new_user(user) -> int:
+    """
+    For a new user, create pending tasks for all current movies and properties.
+    Returns the number of tasks created.
+    """
+    task_types = TaskType.objects.filter(is_active=True)
+    movies: Iterable[Movie] = Movie.objects.all()
+    properties: Iterable[PropertyListing] = PropertyListing.objects.all()
+    today = timezone.localdate()
+
+    created = 0
+    task_type_map = {tt.code.upper(): tt for tt in task_types}
+
+    # Create movie tasks
+    movie_type = task_type_map.get("RATE_MOVIE")
+    if movie_type:
+        movie_tasks = [
+            UserTask(
+                user=user,
+                task_type=movie_type,
+                date=today,
+                status="PENDING",
+                movie=movie,
+            )
+            for movie in movies
+        ]
+        UserTask.objects.bulk_create(movie_tasks, ignore_conflicts=True)
+        created += len(movie_tasks)
+
+    # Create property tasks
+    property_type = task_type_map.get("RATE_PROPERTY")
+    if property_type:
+        property_tasks = [
+            UserTask(
+                user=user,
+                task_type=property_type,
+                date=today,
+                status="PENDING",
+                property_listing=prop,
+            )
+            for prop in properties
+        ]
+        UserTask.objects.bulk_create(property_tasks, ignore_conflicts=True)
+        created += len(property_tasks)
+
+    return created
+
+
+def backfill_tasks_for_users_without_tasks() -> int:
+    """
+    Create tasks for any existing users that currently have no tasks.
+    Returns the total number of tasks created across all users.
+    """
+    UserModel = get_user_model()
+    users_without_tasks = UserModel.objects.annotate(task_count=Count("tasks")).filter(task_count=0)
+    total_created = 0
+    for user in users_without_tasks:
+        total_created += create_tasks_for_new_user(user)
+    return total_created

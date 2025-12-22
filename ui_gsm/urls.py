@@ -11,5 +11,6 @@ urlpatterns = [
     path("earn/", earn_tasks_view, name="earn"),
     path("join/", views.join, name="join"),
     path("invite/", views.invite, name="invite"),
+    path("invite/team-overview/", views.team_overview, name="team_overview"),
     path("growth/", views.growth, name="growth"),
 ]

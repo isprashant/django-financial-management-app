@@ -1,0 +1,48 @@
+{% extends "ui_gsm/base.html" %}
+{% load static %}
+{% block title %}{{ title|default:"Team Overview" }}{% endblock %}
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'invite.css' %}?v=2">
+{% endblock %}
+
+{% block content %}
+  <header class="invite-topbar">
+    <a class="back" href="{% url 'invite' %}" aria-label="Back">&#8592;</a>
+    <h1>teams</h1>
+    <span class="spacer" aria-hidden="true"></span>
+  </header>
+
+  <section class="team-overview section-shell">
+    <div class="wide-container">
+      <div class="card team-card">
+        <div class="team-card__header">
+          <div>
+            <p class="eyebrow">Referral performance</p>
+            <h2>All referred users</h2>
+          </div>
+        </div>
+        {% if team_rows %}
+          <div class="member-table">
+            {% for row in team_rows %}
+              <div class="member-block">
+                <div class="member-name">{{ row.referred.username|default:row.referred }}</div>
+                <div class="member-metrics">
+                  <div class="metric">
+                    <span class="metric-label">Team size</span>
+                    <span class="metric-value">{{ row.team_size }}</span>
+                  </div>
+                  <div class="metric">
+                    <span class="metric-label">Team revenue</span>
+                    <span class="metric-value">₹ {{ row.team_revenue }}</span>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="empty-note">No teams to show yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

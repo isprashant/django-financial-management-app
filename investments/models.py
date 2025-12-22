@@ -70,6 +70,11 @@ class InvestmentReturnLog(TimeStampedModel):
     class Meta:
         unique_together = ("user_investment", "date")
 
+    def __str__(self):
+        username = getattr(self.user_investment.user, "username", None) if self.user_investment else None
+        inv_name = str(self.user_investment) if self.user_investment else "Unknown investment"
+        return f"{username or 'User'} - {inv_name} @ {self.date}"
+
 '''
 Your cron/job logic:
 

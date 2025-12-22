@@ -1,11 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 
 from analytics.models import DailyUserStatement
 from referrals.services import handle_successful_signup
-from .forms import CustomUserChangeForm, CustomUserCreationForm
+from .forms import CustomUserChangeForm, CustomUserCreationForm, UserProfileForm
 
 
 @login_required
@@ -27,6 +27,41 @@ def profile_view(request):
             "referral_code": referral_code,
             "referral_link": referral_link,
             "statements": statements,
+        },
+    )
+
+
+@login_required
+def profile_edit(request):
+    profile = getattr(request.user, "profile", None)
+    # Fallback: ensure profile exists
+    if not profile:
+        from users.models import UserProfile
+
+        profile, _ = UserProfile.objects.get_or_create(
+            user=request.user,
+            defaults={
+                "full_name": request.user.get_full_name() or request.user.username,
+                "mobile_number": "",
+                "withdrawal_method": "",
+                "withdrawal_details": "",
+            },
+        )
+
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect("profile")
+    else:
+        form = UserProfileForm(instance=profile)
+
+    return render(
+        request,
+        "users/profile_edit.html",
+        {
+            "title": "Edit Profile",
+            "form": form,
         },
     )
 

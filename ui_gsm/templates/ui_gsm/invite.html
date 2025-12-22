@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}{{ title|default:"Share" }}{% endblock %}
 {% block extra_head %}
-  <link rel="stylesheet" href="{% static 'invite.css' %}">
+  <link rel="stylesheet" href="{% static 'invite.css' %}?v=2">
 {% endblock %}
 {% block content %}
   <header class="invite-topbar">
@@ -33,10 +33,63 @@
 
         <p class="hint">Share your invitation link or QR code with your family and friends, they will get a new income in KSB and change their lives!</p>
       {% else %}
-        <div class="card" style="text-align:center; padding: 24px;">
-          <p style="margin: 0; color: rgba(255,255,255,0.8);">Sign in to get your personal referral link and QR code.</p>
+        <div class="card text-card">
+          <p>Sign in to get your personal referral link and QR code.</p>
         </div>
       {% endif %}
+    </div>
+  </section>
+
+  <section class="team-summary section-shell">
+    <div class="wide-container">
+      <div class="card team-card">
+        <div class="team-card__header">
+          <div>
+            <p class="eyebrow">Your Team</p>
+            <h2>Referral performance</h2>
+          </div>
+          <a class="cta" href="{% url 'team_overview' %}">View all teams</a>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <tbody>
+              <tr>
+                <th scope="row">Team size</th>
+                <td>{{ team_size }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Team subscriptions</th>
+                <td>{{ team_subscription_count }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Deposits to personal wallets</th>
+                <td>₹ {{ team_personal_deposits }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="plan-widgets section-shell">
+    <div class="wide-container">
+      <div class="plan-widgets__header">
+        <div>
+          <p class="eyebrow">Plans</p>
+          <h2>Referrals by plan</h2>
+        </div>
+      </div>
+      <div class="plan-grid">
+        {% for item in plan_widgets %}
+          <div class="plan-card">
+            <p class="eyebrow">{{ item.plan.name }}</p>
+            <p class="plan-count"><strong>{{ item.joined_count }}</strong> referred joined</p>
+          </div>
+        {% empty %}
+          <p class="empty-note">No plans available.</p>
+        {% endfor %}
+      </div>
     </div>
   </section>
 

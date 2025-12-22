@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+# Global admin branding
+admin.site.site_header = "KSB Administration"
+admin.site.site_title = "KSB Admin"
+admin.site.index_title = "Dashboard"

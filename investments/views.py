@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
+from django.db.models import Prefetch, Q, Sum, Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -10,7 +10,7 @@ from investments.forms import InvestmentForm
 from investments.services import InvestmentError, create_user_investment
 from wallets.models import Wallet
 
-from .models import InvestmentScheme, UserInvestment
+from .models import InvestmentReturnLog, InvestmentScheme, UserInvestment
 
 
 def _wallet_balances(user) -> dict:
@@ -28,11 +28,25 @@ def funds_overview(request):
     balances = _wallet_balances(request.user)
     schemes = InvestmentScheme.objects.filter(is_active=True).order_by("name")
 
-    user_investments = (
-        UserInvestment.objects.filter(user=request.user, status="ACTIVE")
+    now = timezone.now()
+    active_investments = UserInvestment.objects.filter(
+        user=request.user, status="ACTIVE", ends_at__gt=now
+    ).select_related("scheme").annotate(total_returns=Sum("return_logs__return_amount")).order_by("-created_at")
+
+    past_logs_prefetch = Prefetch(
+        "return_logs",
+        queryset=InvestmentReturnLog.objects.order_by("-date"),
+    )
+    completed_investments = (
+        UserInvestment.objects.filter(user=request.user)
+        .filter(Q(status="COMPLETED") | Q(ends_at__lte=now))
         .select_related("scheme")
-        .annotate(total_returns=Sum("return_logs__return_amount"))
-        .order_by("-created_at")
+        .prefetch_related(past_logs_prefetch)
+        .annotate(
+            total_returns=Sum("return_logs__return_amount"),
+            return_count=Count("return_logs"),
+        )
+        .order_by("-ends_at")
     )
 
     context = {
@@ -43,7 +57,8 @@ def funds_overview(request):
         "investment_balance": balances["investment"],
         "total_balance": balances["personal"] + balances["investment"],
         "schemes": schemes,
-        "user_investments": user_investments,
+        "user_investments": active_investments,
+        "completed_investments": completed_investments,
     }
     return render(request, "investments/funds.html", context)
 
