@@ -49,8 +49,3 @@ Below are sample pages from the app UI. Images are shown as smaller thumbnails f
 2. Install dependencies from `requirements.txt`.
 3. Run `python manage.py migrate` to apply database migrations.
 4. Run `python manage.py runserver` to start the development server.
-
-## Notes
-
-- Place the `demo/` directory alongside `README.md` so the image links render correctly on GitHub.
-- Adjust thumbnail widths as needed for better display on different screens.
