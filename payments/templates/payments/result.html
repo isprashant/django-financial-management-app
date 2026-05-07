@@ -1,0 +1,12 @@
+{% extends "ui_gsm/base.html" %}
+{% block title %}Payment {{ status }}{% endblock %}
+{% block content %}
+  <section class="card" style="padding: 24px;">
+    <h2>Payment {{ status }}</h2>
+    <p>{{ message }}</p>
+    <p>Order #{{ order.id }} - {{ order.amount }} {{ order.currency }}</p>
+    {% if gateway_reference %}
+      <p>Gateway reference: {{ gateway_reference }}</p>
+    {% endif %}
+  </section>
+{% endblock %}

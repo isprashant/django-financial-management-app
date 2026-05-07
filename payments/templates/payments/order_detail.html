@@ -1,0 +1,26 @@
+{% extends "ui_gsm/base.html" %}
+{% block title %}Order {{ order.id }}{% endblock %}
+{% block content %}
+  <section class="card" style="padding: 24px;">
+    <h2>Order #{{ order.id }}</h2>
+    <p>Status: {{ order.status }}</p>
+    <p>Amount: {{ order.amount }} {{ order.currency }}</p>
+    {% if order.paid_at %}
+      <p>Paid at: {{ order.paid_at }}</p>
+    {% endif %}
+    {% if order.transactions.exists %}
+      <hr style="margin: 16px 0; border-color: rgba(255,255,255,0.1);">
+      <h3 style="margin-bottom: 12px;">Attempts</h3>
+      <ul style="list-style: none; padding: 0;">
+        {% for txn in order.transactions.all %}
+          <li style="margin-bottom: 8px;">
+            {{ txn.gateway }} - {{ txn.status }} - {{ txn.amount }}
+            {% if txn.gateway_txn_id %} (Ref {{ txn.gateway_txn_id }}){% endif %}
+          </li>
+        {% empty %}
+          <li>No payment attempts yet.</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </section>
+{% endblock %}

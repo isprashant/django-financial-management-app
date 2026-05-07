@@ -13,6 +13,7 @@ urlpatterns = [
     path("", include("referrals.urls", namespace="referrals")),
     path("", include("rewards.urls", namespace="rewards")),
     path("tasks/", include("tasks.urls", namespace="tasks")),
+    path("payments/", include("payments.urls", namespace="payments")),
 ]
 
 if settings.DEBUG:

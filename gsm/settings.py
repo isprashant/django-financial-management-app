@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "analytics",
     "teams",
     "messaging",
+    "payments",
 ]
 
 MIDDLEWARE = [
@@ -109,3 +110,14 @@ LOGIN_URL = '/login/'
 REFERRAL_BONUS_POINTS=50
 REFERRAL_BASE_URL = os.environ.get("REFERRAL_BASE_URL", "http://localhost:8000").rstrip("/")
 TIME_ZONE =  'Asia/Kolkata'
+
+# Easebuzz payment gateway
+EASEBUZZ_MERCHANT_KEY = os.environ.get("EASEBUZZ_MERCHANT_KEY", "")
+EASEBUZZ_SALT = os.environ.get("EASEBUZZ_SALT", "")
+EASEBUZZ_ENV = os.environ.get("EASEBUZZ_ENV", "test").lower()
+EASEBUZZ_INIT_URL = os.environ.get(
+    "EASEBUZZ_INIT_URL",
+    "https://testpay.easebuzz.in/payment/initiateLink"
+    if EASEBUZZ_ENV != "prod"
+    else "https://pay.easebuzz.in/payment/initiateLink",
+)

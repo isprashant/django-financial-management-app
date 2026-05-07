@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from investments.forms import InvestmentForm
-from investments.services import InvestmentError, create_user_investment
+from payments.services import create_order
 from wallets.models import Wallet
 
 from .models import InvestmentReturnLog, InvestmentScheme, UserInvestment
@@ -77,16 +77,19 @@ def scheme_detail(request, pk):
         form = InvestmentForm(request.POST, scheme=scheme)
         if form.is_valid():
             amount = form.cleaned_data["amount"]
-            try:
-                create_user_investment(request.user, scheme, amount)
-            except InvestmentError as exc:
-                messages.error(request, str(exc))
+            if has_active_investment:
+                messages.error(request, "You already have an active investment in this scheme.")
             else:
-                messages.success(
-                    request,
-                    "Investment created successfully. Your first daily return has been credited to your investment wallet.",
+                order = create_order(
+                    user=request.user,
+                    amount=amount,
+                    purpose="INVESTMENT",
+                    description=f"Investment in {scheme.name}",
+                    reference_type="InvestmentScheme",
+                    reference_id=str(scheme.id),
+                    metadata={"scheme_id": scheme.id},
                 )
-                return redirect("funds")
+                return redirect("payments:start", order_id=order.id)
     else:
         form = InvestmentForm(scheme=scheme)
 
